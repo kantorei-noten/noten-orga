@@ -1,12 +1,12 @@
 # Änderungen
 
 Alle nennenswerten Änderungen dieses Projekts. Versionierung nach
-[SemVer](https://semver.org/lang/de/); solange die Hauptversion 0 ist, können sich Schnittstellen
-zwischen Nebenversionen ändern.
+[SemVer](https://semver.org/lang/de/): Änderungen, die eine bestehende Installation zum Handeln
+zwingen, gibt es nur mit einer neuen Hauptversion.
 
-## v0.1.0 — 2026-07-29
+## v1.0.0 — 2026-07-29
 
-Erste öffentliche Fassung.
+Erste öffentliche Fassung — im Alltag einer Kirchenmusikstelle erprobt.
 
 **Archiv**
 - Werke, Ausgaben, Dateien und Stimmen mit Metadaten (Komponist, Gattung, Besetzung, Tonart,

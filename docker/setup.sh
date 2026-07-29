@@ -56,7 +56,7 @@ NOTEN_SECURE_COOKIES=$SECURE
 # NOTEN_HTTP_PORT=8090
 # NOTEN_HTTPS_PORT=8453
 
-# --- Version der Images (ein Tag wie v0.1.0 friert den Stand ein) ---
+# --- Version der Images (ein Tag wie v1.0.0 friert den Stand ein) ---
 NOTEN_VERSION=latest
 
 # --- Zwei-Faktor ---

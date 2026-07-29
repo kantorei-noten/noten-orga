@@ -85,7 +85,7 @@ Images gibt es für **amd64 und arm64** (Raspberry Pi 4/5, ARM-NAS, Apple Silico
 
 ## Betrieb
 
-**Aktualisieren** — empfohlen mit festem Release-Tag in der `.env` (`NOTEN_VERSION=v0.1.0`):
+**Aktualisieren** — empfohlen mit festem Release-Tag in der `.env` (`NOTEN_VERSION=v1.0.0`):
 
 ```bash
 cd noten-orga/docker

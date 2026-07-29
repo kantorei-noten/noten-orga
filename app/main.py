@@ -48,7 +48,7 @@ def create_app() -> FastAPI:
     _dev = settings.environment == "dev"
     app = FastAPI(
         title="Kantorei — Notenarchiv",
-        version="0.1.0",
+        version="1.0.0",
         lifespan=lifespan,
         docs_url="/docs" if _dev else None,
         redoc_url="/redoc" if _dev else None,

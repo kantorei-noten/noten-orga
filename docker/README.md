@@ -32,7 +32,7 @@ docker compose -f compose.yaml -f compose.build.yaml up -d --build
 |---|---|---|
 | `NOTEN_DOMAIN` | *(leer)* | Domain → automatisches Let's-Encrypt-Zertifikat. Leer = `:80` ohne TLS |
 | `NOTEN_SECURE_COOKIES` | `true` | Muss auf `false`, wenn ohne HTTPS betrieben — sonst schlägt der Login fehl |
-| `NOTEN_VERSION` | `latest` | Fester Release-Tag (`v0.1.0`) ist im Produktivbetrieb die bessere Wahl |
+| `NOTEN_VERSION` | `latest` | Fester Release-Tag (`v1.0.0`) ist im Produktivbetrieb die bessere Wahl |
 | `NOTEN_HTTP_PORT` / `NOTEN_HTTPS_PORT` | `80` / `443` | Für NAS oder Server, auf denen die Ports belegt sind |
 | `NOTEN_BACKUP_DIR` | `backups` | Host-Pfad (empfohlen) oder das gleichnamige Docker-Volume |
 | `TZ` | `Europe/Berlin` | Zeitzone für die Sicherungs-Uhrzeit — ohne sie liefe sie nach UTC |

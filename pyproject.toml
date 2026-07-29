@@ -1,6 +1,6 @@
 [project]
 name = "noten-orga"
-version = "0.1.0"
+version = "1.0.0"
 description = "Kantorei — selbstgehostetes Notenarchiv für Kirchenmusik"
 license = "AGPL-3.0-or-later"
 license-files = ["LICENSE"]
