@@ -20,6 +20,9 @@ Instrument und druckbar als fertige Gottesdienst-Mappe.
 <div align="center">
 <img src="web/public/hilfe/04-suche.png" alt="Suche mit Filtern" width="49%">
 <img src="web/public/hilfe/05-werk.png" alt="Werkansicht" width="49%">
+
+**→ [Alle Bereiche mit Bildern: die Anleitung](ANLEITUNG.md)**
+
 </div>
 
 ## Funktionen
@@ -70,7 +73,8 @@ docker compose exec app python -m app.cli create-admin <benutzername>
 ```
 
 Der letzte Befehl fragt das Passwort ab und zeigt die **2FA-URI**, die einmalig in die
-Authenticator-App eingescannt wird. Danach ist die App erreichbar:
+Authenticator-App eingescannt wird. Wie es danach weitergeht, zeigt die
+**[Anleitung](ANLEITUNG.md)** — alle Bereiche mit Bildern. Die App erreichst du:
 
 - **mit Domain** unter `https://<deine-domain>` — Caddy holt das Let's-Encrypt-Zertifikat
   automatisch, sobald der A-Record auf den Server zeigt
