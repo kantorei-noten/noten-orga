@@ -25,7 +25,8 @@ jobs:
           --health-retries 15
     steps:
       - uses: actions/checkout@v7
-      - uses: astral-sh/setup-uv@v9
+      # setup-uv pflegt oberhalb von v7 keine Major-Aliase mehr — exakter Tag nötig
+      - uses: astral-sh/setup-uv@v9.0.0
       - run: uv sync
       - name: Tests
         env:
