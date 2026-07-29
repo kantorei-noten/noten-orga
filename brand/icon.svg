@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="Kantorei App-Icon">
+  <rect width="512" height="512" fill="#2E6EB5"/>
+  <g fill="#FFFFFF" transform="translate(60 60) scale(4.4)">
+    <rect x="47" y="21" width="6.5" height="43" rx="3.25"/>
+    <path d="M53 21c14 1 21 11 18 24-1-11-9-17-18-19z"/>
+    <ellipse cx="36" cy="66" rx="14" ry="11" transform="rotate(-18 36 66)"/>
+  </g>
+</svg>

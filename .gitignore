@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+
+# Daten / Uploads — NIE ins Repo (Scans, MusicXML, Renderings, Thumbnails)
+data/
+/opt-data/
+*.pdf
+*.mxl
+*.musicxml
+*.tiff
+
+# Secrets / lokale Konfiguration
+.env
+*.local.env
+secrets/
+
+# OS / Editor
+.DS_Store
+.idea/
+.vscode/
+.devdb/
+var/
+uv.lock~
+.pytest_cache/

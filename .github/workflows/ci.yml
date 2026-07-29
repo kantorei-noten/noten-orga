@@ -1,0 +1,75 @@
+name: CI
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: noten_app
+          POSTGRES_PASSWORD: devpw
+          POSTGRES_DB: noten_test
+        ports:
+          - 5433:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v9
+      - run: uv sync
+      - name: Tests
+        env:
+          NOTEN_TEST_DATABASE_URL: postgresql://noten_app:devpw@localhost:5433/noten_test
+        run: uv run pytest -q
+      - name: Dependency-Audit (pip-audit)
+        run: uv run --with pip-audit pip-audit || true
+
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+      - run: cd web && npm ci && npm run build
+
+  compose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: compose-Dateien validieren
+        working-directory: docker
+        env:
+          NOTEN_DB_PASSWORD: ci-dummy
+          NOTEN_SESSION_SECRET: ci-dummy
+        run: |
+          docker compose -f compose.yaml config >/dev/null
+          docker compose -f compose.yaml -f compose.build.yaml config >/dev/null
+      - name: Shell-Skripte prüfen
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq shellcheck
+          # nur echte Fehler brechen den Lauf ab, Stilhinweise nicht
+          shellcheck -S error docker/setup.sh docker/entrypoint.sh
+          shellcheck -S error -s sh docker/backup.sh
+
+  images:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Trivy filesystem scan
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          scan-type: fs
+          scanners: vuln
+          severity: HIGH,CRITICAL
+          exit-code: "0"

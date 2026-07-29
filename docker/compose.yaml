@@ -1,0 +1,123 @@
+# Kantorei (Noten-Orga) — Selbsthosting per Docker Compose.
+#
+#   cd docker && ./setup.sh && docker compose up -d
+#
+# Es werden fertige Images von ghcr.io geladen. Wer aus dem Quellcode bauen will:
+#   docker compose -f compose.yaml -f compose.build.yaml up -d --build
+#
+# Sicherheit: DB, App und Worker haben KEINEN veröffentlichten Port — nur Caddy (80/443)
+# ist von außen erreichbar; alles andere lebt im internen Netz. Secrets kommen aus .env.
+name: noten
+
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: noten
+      POSTGRES_USER: noten_app
+      POSTGRES_PASSWORD: ${NOTEN_DB_PASSWORD:?bitte NOTEN_DB_PASSWORD in .env setzen (./setup.sh)}
+    volumes:
+      - db:/var/lib/postgresql/data
+    networks: [intern]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U noten_app -d noten"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+    restart: unless-stopped
+    # KEIN ports: — DB nur intern erreichbar
+
+  app:
+    image: ${NOTEN_IMAGE_BASE:-ghcr.io/kantorei-noten/noten-orga}/app:${NOTEN_VERSION:-latest}
+    environment:
+      NOTEN_DATABASE_URL: postgresql://noten_app:${NOTEN_DB_PASSWORD}@db:5432/noten
+      NOTEN_SESSION_SECRET: ${NOTEN_SESSION_SECRET:?bitte NOTEN_SESSION_SECRET in .env setzen (./setup.sh)}
+      NOTEN_SECURE_COOKIES: ${NOTEN_SECURE_COOKIES:-true}
+      NOTEN_TOTP_PFLICHT: ${NOTEN_TOTP_PFLICHT:-true}
+      NOTEN_ENVIRONMENT: prod
+      NOTEN_DATA_DIR: /data
+    volumes:
+      - data:/data
+    networks: [intern]
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c",
+             "import urllib.request,sys,json; r=json.load(urllib.request.urlopen('http://127.0.0.1:8001/api/health', timeout=4)); sys.exit(0 if r.get('status')=='ok' else 1)"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    restart: unless-stopped
+    # KEIN ports: — nur Caddy proxyt hierher
+
+  worker:
+    image: ${NOTEN_IMAGE_BASE:-ghcr.io/kantorei-noten/noten-orga}/worker:${NOTEN_VERSION:-latest}
+    environment:
+      NOTEN_DATABASE_URL: postgresql://noten_app:${NOTEN_DB_PASSWORD}@db:5432/noten
+      NOTEN_DATA_DIR: /data
+    volumes:
+      - data:/data
+    networks: [intern]
+    depends_on:
+      db:
+        condition: service_healthy
+      # erst starten, wenn die App die Migrationen angewandt hat — sonst sucht der
+      # Worker die Tabelle "job", bevor es sie gibt, und loggt beim ersten Start einen Fehler
+      app:
+        condition: service_healthy
+    restart: unless-stopped
+
+  caddy:
+    image: ${NOTEN_IMAGE_BASE:-ghcr.io/kantorei-noten/noten-orga}/web:${NOTEN_VERSION:-latest}
+    environment:
+      # Leer/ungesetzt -> ":80" (lokaler Betrieb ohne Domain). Caddy nimmt seinen
+      # eigenen Default NUR bei ungesetzter Variable — ein leerer String würde die
+      # Site-Adresse killen und Caddy crashen. Darum hier explizit auf :80 defaulten.
+      NOTEN_DOMAIN: ${NOTEN_DOMAIN:-:80}
+    ports:
+      # Host-Ports überschreibbar (z. B. auf einem NAS, wo 80/443 schon belegt sind).
+      - "${NOTEN_HTTP_PORT:-80}:80"
+      - "${NOTEN_HTTPS_PORT:-443}:443"
+    networks: [intern]
+    depends_on: [app]
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+    restart: unless-stopped
+
+  # Nächtliche Sicherung: pg_dump + Kopie des Objektspeichers, mit Aufbewahrungsgrenze.
+  # Ziel über NOTEN_BACKUP_DIR — ein Host-Pfad (empfohlen: externe Platte/NAS-Share)
+  # oder, als Default, das benannte Volume "backups".
+  backup:
+    image: ${NOTEN_IMAGE_BASE:-ghcr.io/kantorei-noten/noten-orga}/backup:${NOTEN_VERSION:-latest}
+    environment:
+      PGHOST: db
+      PGUSER: noten_app
+      PGDATABASE: noten
+      PGPASSWORD: ${NOTEN_DB_PASSWORD}
+      BACKUP_UHRZEIT: ${NOTEN_BACKUP_UHRZEIT:-03:30}
+      BACKUP_KEEP_DAYS: ${NOTEN_BACKUP_KEEP_DAYS:-14}
+      # ohne Zeitzone liefe die Sicherung nach UTC — 03:30 wäre dann 05:30 Ortszeit
+      TZ: ${TZ:-Europe/Berlin}
+    volumes:
+      - data:/data:ro          # nur lesen — die Sicherung fasst den Objektspeicher nicht an
+      - ${NOTEN_BACKUP_DIR:-backups}:/backup
+    networks: [intern]
+    depends_on:
+      db:
+        condition: service_healthy
+    # "docker compose run --rm backup once" sichert sofort (überschreibt command)
+    restart: unless-stopped
+
+networks:
+  intern:
+    driver: bridge
+
+volumes:
+  db:
+  data:
+  backups:
+  caddy_data:
+  caddy_config:

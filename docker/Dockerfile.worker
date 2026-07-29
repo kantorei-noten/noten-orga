@@ -1,0 +1,25 @@
+# Worker-Image: schwere/riskante Jobs (music21-Harmonieanalyse, Import). Getrennt von der API.
+FROM python:3.13-slim AS build
+
+COPY --from=ghcr.io/astral-sh/uv:0.5 /uv /bin/uv
+ENV UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy
+WORKDIR /app
+
+COPY pyproject.toml uv.lock ./
+# App-Deps + Worker-Gruppe (music21), OHNE dev
+RUN uv sync --frozen --no-dev --group worker --no-install-project
+
+COPY worker ./worker
+COPY app ./app
+COPY scripts ./scripts
+
+FROM python:3.13-slim AS runtime
+ENV PYTHONUNBUFFERED=1 PATH="/app/.venv/bin:$PATH" HOME=/home/noten
+# music21 legt beim ersten Import eine Nutzer-Config an -> Home-Verzeichnis nötig
+RUN useradd -u 10001 -r -m -d /home/noten -s /usr/sbin/nologin noten \
+    && mkdir -p /data && chown noten:noten /data
+WORKDIR /app
+COPY --from=build --chown=noten:noten /app /app
+ENV NOTEN_DATA_DIR=/data NOTEN_ENVIRONMENT=prod
+USER noten
+CMD ["python", "-m", "worker.main"]

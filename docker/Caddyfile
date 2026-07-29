@@ -1,0 +1,34 @@
+# Reverse-Proxy + PWA-Auslieferung. Domain über NOTEN_DOMAIN (dann Auto-TLS via Let's Encrypt),
+# sonst Default :80 (lokal/hinter eigenem TLS-Terminator).
+{$NOTEN_DOMAIN::80} {
+	encode gzip
+
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		Content-Security-Policy "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; worker-src 'self' blob:; connect-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; frame-src 'self' blob:; object-src 'none'; base-uri 'self'; frame-ancestors 'none'"
+		-Server
+	}
+
+	request_body {
+		max_size 60MB
+	}
+
+	# API zur FastAPI im internen Netz (Container "app").
+	# Caddy hängt die echte Client-IP an X-Forwarded-For an; die App wertet deshalb den
+	# LETZTEN Eintrag aus (der erste ist vom Client frei wählbar). Steht noch ein weiterer
+	# Proxy davor (NAS-Portal, Cloudflare), sieht die App dessen Adresse — dann greift das
+	# Login-Limit pro Proxy statt pro Besucher; in dem Fall dort ein Limit einrichten.
+	handle /api/* {
+		reverse_proxy app:8001
+	}
+
+	# PWA-Static + SPA-Fallback (Deep-Links -> index.html)
+	handle {
+		root * /srv
+		try_files {path} /index.html
+		file_server
+	}
+}

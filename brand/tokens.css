@@ -1,0 +1,97 @@
+/* ============================================================
+   Kantorei — Design-Tokens (Single Source of Truth)
+   Corporate Design: „Modern-reduziert" · Inter · Blau-Akzent
+   Themes:  :root = Hell (Verwaltung)
+            [data-theme="dark"] = Empore-Dunkel (Spielmodus)
+            [data-theme="rot"]  = Rotlicht (Nacht auf der Empore)
+   Nutzung: <link rel="stylesheet" href="brand/tokens.css">
+   ============================================================ */
+
+:root{
+  /* --- Marke --- */
+  --brand-blue:#2E6EB5;
+  --brand-blue-strong:#245A96;
+  --brand-blue-tint:#EAF1FA;
+
+  /* --- Flächen & Linien (Hell) --- */
+  --paper:#FFFFFF;          /* Grundfläche */
+  --surface:#F5F6F8;        /* ruhige Sekundärfläche */
+  --surface-2:#EDEFF3;
+  --border:#E2E5EA;
+  --border-strong:#CDD3DC;
+
+  /* --- Text --- */
+  --ink:#16181D;            /* Primärtext */
+  --ink-2:#59616E;          /* Sekundärtext */
+  --ink-3:#878F9C;          /* gedämpft / Platzhalter */
+
+  /* --- Akzent (semantisch = interaktiv) --- */
+  --accent:#2E6EB5;
+  --accent-strong:#245A96;
+  --accent-tint:#EAF1FA;
+  --accent-ink:#FFFFFF;     /* Text auf Akzent */
+
+  /* --- Statusfarben --- */
+  --success:#2E9E5B;  --success-tint:#E7F5EC;
+  --warning:#C7871B;  --warning-tint:#FBF1DF;
+  --danger:#C4463F;   --danger-tint:#FBEAE9;
+  --info:var(--accent);
+
+  /* --- Typografie --- */
+  --font-sans:'Inter','InterVariable',-apple-system,'Segoe UI',Roboto,Arial,sans-serif;
+  --font-mono:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+  --text-xs:12px; --text-sm:13px; --text-base:15px; --text-md:17px;
+  --text-lg:21px; --text-xl:28px; --text-2xl:40px;
+  --lh-tight:1.2; --lh-snug:1.35; --lh-normal:1.55;
+  --fw-regular:400; --fw-medium:500; --fw-semibold:600; --fw-bold:700;
+
+  /* --- Raster (8pt) --- */
+  --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px;
+  --space-5:24px; --space-6:32px; --space-8:48px; --space-10:64px;
+
+  /* --- Form --- */
+  --radius-sm:6px; --radius-md:10px; --radius-lg:14px; --radius-pill:999px;
+
+  /* --- Elevation (dezent, „modern-reduziert") --- */
+  --shadow-1:0 1px 2px rgba(16,24,40,.06), 0 1px 3px rgba(16,24,40,.08);
+  --shadow-2:0 4px 14px rgba(16,24,40,.10);
+  --ring:0 0 0 3px rgba(46,110,181,.35);   /* Fokus-Ring */
+
+  /* --- Motion --- */
+  --ease-standard:cubic-bezier(.2,.7,.2,1);
+  --ease-out:cubic-bezier(0,.6,.2,1);
+  --dur-1:120ms; --dur-2:180ms; --dur-3:240ms;
+
+  /* --- Layout --- */
+  --tap-min:44px;           /* Mindest-Trefferfläche */
+  --content-max:1080px;
+}
+
+/* ============ Empore-Dunkel (Spielmodus) ============ */
+[data-theme="dark"]{
+  --paper:#16181D; --surface:#1E2128; --surface-2:#23272F;
+  --border:#2E333D; --border-strong:#3A414D;
+  --ink:#E7EAF0; --ink-2:#9AA3B2; --ink-3:#6E7787;
+  --accent:#4F8CF0; --accent-strong:#6FA2F4; --accent-tint:#1B2740; --accent-ink:#0B1220;
+  --success:#39B35A; --success-tint:#16281c;
+  --warning:#E0A233; --warning-tint:#2c2312;
+  --danger:#E05A5A;  --danger-tint:#2c1717;
+  --shadow-1:0 1px 2px rgba(0,0,0,.4);
+  --shadow-2:0 8px 24px rgba(0,0,0,.5);
+  --ring:0 0 0 3px rgba(79,140,240,.45);
+}
+
+/* ============ Rotlicht (Nacht-Empore) ============ */
+[data-theme="rot"]{
+  --paper:#160504; --surface:#220906; --surface-2:#2b0d09;
+  --border:#3a140f; --border-strong:#521b13;
+  --ink:#F0C3B5; --ink-2:#C98A78; --ink-3:#9c6252;
+  --accent:#E0724F; --accent-strong:#EE875F; --accent-tint:#2b0d09; --accent-ink:#160504;
+  --success:#D98A4F; --warning:#E0A233; --danger:#E05a5a;
+  --shadow-1:none; --shadow-2:none;
+  --ring:0 0 0 3px rgba(224,114,79,.4);
+}
+
+@media (prefers-reduced-motion:reduce){
+  :root{ --dur-1:0ms; --dur-2:0ms; --dur-3:0ms; }
+}

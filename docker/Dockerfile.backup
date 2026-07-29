@@ -1,0 +1,13 @@
+# Sicherungs-Image: pg_dump in passender Version plus das Sicherungsskript.
+# Bewusst ein eigenes Image statt eines Bind-Mounts von backup.sh: Ist das Repo-Verzeichnis
+# nicht in die Docker-VM gemountet (Docker Desktop mit begrenztem File Sharing, Colima,
+# manche NAS), legt Docker beim Mount ein leeres Verzeichnis an — der Container startet
+# dann still in einer Endlosschleife, ohne eine einzige Zeile Log. Im Image kann das nicht
+# passieren.
+FROM postgres:17-alpine
+
+COPY docker/backup.sh /usr/local/bin/backup.sh
+RUN chmod +x /usr/local/bin/backup.sh
+
+ENTRYPOINT ["/bin/sh", "/usr/local/bin/backup.sh"]
+CMD ["daemon"]

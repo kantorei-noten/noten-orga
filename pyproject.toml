@@ -1,0 +1,42 @@
+[project]
+name = "noten-orga"
+version = "0.1.0"
+description = "Kantorei — selbstgehostetes Notenarchiv für Kirchenmusik"
+license = "AGPL-3.0-or-later"
+license-files = ["LICENSE"]
+authors = [{ name = "Michael Henseleit" }]
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.34",
+    "psycopg[binary,pool]>=3.2",
+    "pydantic-settings>=2.6",
+    "alembic>=1.14",
+    "argon2-cffi>=23.1",
+    "pyotp>=2.9",
+    "pillow>=11.0",
+    "pymupdf>=1.24",
+    "python-multipart>=0.0.12",
+    "defusedxml>=0.7",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3",
+    "pytest-asyncio>=0.24",
+    "httpx>=0.28",
+]
+# Nur im Worker-Container (schwere Analyse/Import) — NICHT im schlanken App-Image.
+worker = [
+    "music21>=9.1",
+]
+
+# Reine Anwendung (kein zu bauendes/installierendes Paket) — uv verwaltet nur die venv + Deps.
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+pythonpath = ["."]
+testpaths = ["tests"]
+addopts = "-q"

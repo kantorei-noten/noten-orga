@@ -1,0 +1,15 @@
+# Web-Image: baut die PWA und serviert sie + reverse-proxyt /api zur App.
+FROM node:22-slim AS web
+WORKDIR /web
+COPY web/package.json web/package-lock.json ./
+RUN npm ci --no-audit --no-fund
+COPY web ./
+COPY brand /brand
+# AGPL §13: Der Footer verlinkt den Quellcode. Forks tragen hier ihr eigenes Repository ein.
+ARG VITE_QUELLCODE_URL=""
+ENV VITE_QUELLCODE_URL=$VITE_QUELLCODE_URL
+RUN npm run build
+
+FROM caddy:2-alpine
+COPY docker/Caddyfile /etc/caddy/Caddyfile
+COPY --from=web /web/dist /srv

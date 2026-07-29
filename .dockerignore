@@ -1,0 +1,44 @@
+# NIEMALS ins Image: Secrets, Dev-DB, VCS, Builds, Daten
+.git
+.gitignore
+.github
+.venv
+venv
+__pycache__
+**/__pycache__
+*.pyc
+.pytest_cache
+.ruff_cache
+.mypy_cache
+
+# Lokale Dev-DB / Daten / Uploads
+.devdb
+var
+data
+uploads
+*.dump
+*.sqlite
+
+# Secrets / Env
+.env
+.env.*
+secrets
+**/secrets
+*.pw
+restic.env
+monitor.env
+
+# Frontend-Build-Artefakte (Caddy-Image baut selbst)
+web/node_modules
+web/dist
+
+# Sonstiges
+node_modules
+docs
+deploy
+tools
+# brand/ NICHT ignorieren — das Caddy-Image baut die PWA und braucht es
+# (Dockerfile.caddy: COPY brand /brand; vite-Alias @brand -> ../brand).
+*.md
+!docker/README.md
+scratchpad

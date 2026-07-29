@@ -1,0 +1,29 @@
+# Override zum Bauen aus dem Quellcode statt fertige Images von ghcr.io zu laden:
+#
+#   docker compose -f compose.yaml -f compose.build.yaml up -d --build
+#
+# Nötig für Entwicklung, eigene Änderungen und Architekturen, für die es keine
+# fertigen Images gibt.
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+
+  worker:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.worker
+
+  backup:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.backup
+
+  caddy:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.caddy
+      args:
+        # AGPL §13: Forks tragen hier ihr eigenes, öffentlich erreichbares Repository ein.
+        VITE_QUELLCODE_URL: ${NOTEN_QUELLCODE_URL:-}
